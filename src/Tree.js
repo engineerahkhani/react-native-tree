@@ -447,6 +447,6 @@ const defaultStyles = {
     }
 }
 Tree.propTypes = {
-	treeData: PropTypes.array.isRequired,
+	// treeData: PropTypes.array.isRequired,
 };
 export default Tree
