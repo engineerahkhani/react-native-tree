@@ -1,9 +1,10 @@
-import React, { PropTypes } from 'react';
-import {ScrollView, View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import React, {PropTypes} from 'react';
+import {ScrollView, View, Text, TouchableOpacity, Dimensions} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MyUtils from './MyUtils'
 
 const ScreenHeight = Dimensions.get('window').height;
+
 class Tree extends React.Component {
     constructor(props) {
         super(props);
@@ -17,15 +18,17 @@ class Tree extends React.Component {
     }
 
     componentWillMount() {
-        let {checkable, checkStrictly, expandedKeys, selectedKeys, defaultSelectedKeys, defaultExpandedKeys,
-             defaultExpandAll, defaultExpandRoot, treeData} = this.props;
+        let {
+            checkable, checkStrictly, expandedKeys, selectedKeys, defaultSelectedKeys, defaultExpandedKeys,
+            defaultExpandAll, defaultExpandRoot, treeData
+        } = this.props;
         let tempExpandedKeys = [];
         let expanded = {};
         let selected = {};
-        
+
         // 默认展开根节点
         if (defaultExpandRoot) {
-            if(treeData && treeData.length === 1) {
+            if (treeData && treeData.length === 1) {
                 tempExpandedKeys = [treeData[0].key];
                 expanded[treeData[0].key] = true;
             }
@@ -67,17 +70,17 @@ class Tree extends React.Component {
             selectedNodes: selectedNodes || []
         })
     }
-    
+
     /**
      * expandedKeys （受控）展开指定的树节点
      * selectedKeys （受控）选中指定的树节点
-     * @param {{expandedKeys, selectedKeys}} nextProps 
+     * @param {{expandedKeys, selectedKeys}} nextProps
      */
     componentWillReceiveProps(nextProps) {
         let {checkable, checkStrictly, treeData, expandedKeys, selectedKeys} = nextProps;
         let selected = {};
         let expanded = {};
-        
+
         if (this.props.selectedKeys !== selectedKeys) {
             selected = MyUtils.arrayToObj(selectedKeys);
             let selectedNodes = [];
@@ -98,21 +101,24 @@ class Tree extends React.Component {
             })
         }
         if (this.props.expandedKey !== expandedKeys) {
-            expanded = MyUtils.arrayToObj(expandedKeys);    
+            expanded = MyUtils.arrayToObj(expandedKeys);
             this.setState({
                 expanded: expanded,
                 expandedKeys: expandedKeys,
             })
         }
     }
-    
+
     /**
      * 选择节点事件触发
-     * @param {TreeNode} node 
+     * @param {TreeNode} node
      */
     onSelect(node) {
         let {selectedKeys, selected, expanded, selectedNodes} = this.state;
-        const {onSelect, multiple, checkable, checkStrictly} = this.props;
+        const {onSelect, multiple, checkable, checkStrictly, justLeafSelect} = this.props;
+        if (justLeafSelect && node.children !== undefined && node.children.length > 0) {
+            return
+        }
         let isSelected = selected[node.key];
         selected[node.key] = !isSelected;
         // 父子节点关联关系
@@ -146,7 +152,7 @@ class Tree extends React.Component {
                 // 如果子节点有子节点并处于展开状态，则递归选中
                 if (expanded[item.key]) {
                     selectNode(item, isSelect);
-                } 
+                }
             });
             if (childSelectAllNum === children.length && !isSelect) {  // 当全部选中时且选择的根节点为选中状态
                 selectedKeys = selectedKeys.filter(key => -1 === childrenKeys.indexOf(key));
@@ -169,7 +175,7 @@ class Tree extends React.Component {
                 });
             }
         }
-        
+
         // 多选父子节点不建立关联关系
         let multipleSelect = () => {
             if (isSelected) {
@@ -191,7 +197,7 @@ class Tree extends React.Component {
          * 1. 如果定义checkable则建立父子节点关联关系
          * 2. 如果定义checkStrictly则取消父子节点关联关系
          * 3. 如果定义multiple则多选
-         */ 
+         */
 
         if (checkable) {
             if (checkStrictly) {
@@ -228,17 +234,17 @@ class Tree extends React.Component {
             selected: selected,
             selectedNodes: selectedNodes
         })
-        
+
         onSelect && onSelect(selectedKeys, {
-            selected: !isSelected, 
-            selectedNodes: selectedNodes, 
+            selected: !isSelected,
+            selectedNodes: selectedNodes,
             node: node
-        }); 
+        });
     }
-    
+
     /**
      * 点击展开或收起图标时触发
-     * @param {TreeNode} node 
+     * @param {TreeNode} node
      */
     onExpand(node) {
         const {checkable, checkStrictly} = this.props;
@@ -247,7 +253,7 @@ class Tree extends React.Component {
         const {onExpand} = this.props;
         let isExpanded = expanded[key];
         expanded[key] = !isExpanded;
-        
+
         if (isExpanded) {
             expandedKeys = expandedKeys.filter(expandedKey => expandedKey !== key);
         } else {
@@ -269,7 +275,7 @@ class Tree extends React.Component {
                 }
             });
         }
-        
+
         this.setState({
             expandedKeys: expandedKeys,
             expanded: expanded,
@@ -278,17 +284,17 @@ class Tree extends React.Component {
             selectedNodes: selectedNodes
         })
         onExpand && onExpand(expandedKeys, {
-            expanded: !isExpanded, 
+            expanded: !isExpanded,
             node: node
-        }); 
+        });
     }
-    
+
     /**
      * 渲染树节点图标和文字
-     * @param {TreeNode} node 
+     * @param {TreeNode} node
      */
     renderItem(node) {
-        const {checkable, checkStrictly,nodeStyle} = this.props;
+        const {checkable, checkStrictly, nodeStyle} = this.props;
         let {expanded, selected} = this.state;
         let {expandedKeys, selectedKeys, showLine, iconSize, expandIconSize} = this.props;
         const {key, children, icon, label, disabled} = node;
@@ -298,14 +304,14 @@ class Tree extends React.Component {
         let expandIconColor = '#333'
         const hasChildren = children && children.length > 0;
         let expandIcon = expanded[key] ? 'caret-down' : 'caret-right';
-        
+
         if (showLine) {
             expandIconColor = '#888'
             expandIcon = expanded[key] ? 'minus-square-o' : 'plus-square-o';
         }
 
         let selectIcon = selected[key] ? 'check-square' : 'square-o';
-        
+
         // 父子节点有关联，如果传入父节点key，则子节点自动选中, 反之亦然
 
         if (checkable && !checkStrictly) {
@@ -323,7 +329,7 @@ class Tree extends React.Component {
             selectColor = '#D0D0D0';
             textStyle.color = '#D0D0D0';
         }
-        
+
         textStyle.marginLeft = 2;
         if (selected[key]) {
             textStyle.backgroundColor = '#D2EAFB'
@@ -338,25 +344,26 @@ class Tree extends React.Component {
         let styles = this.props.styles || defaultStyles;
         return (
             <View style={styles.item}>
-                {hasChildren && 
-                <Icon 
-                    onPress={this.onExpand.bind(this, node)} 
-                    style={[styles.icon, {color: expandIconColor}]} 
-                    size={expandIconSize} 
-                    name={expandIcon} 
+                {hasChildren &&
+                <Icon
+                    onPress={this.onExpand.bind(this, node)}
+                    style={[styles.icon, {color: expandIconColor}]}
+                    size={expandIconSize}
+                    name={expandIcon}
                 />}
-                {checkable && 
-                <Icon 
-                    onPress={disabled ? ()=>{} : this.onSelect.bind(this, node)} 
-                    style={[styles.icon, {color: selectColor}]} 
-                    size={iconSize} 
-                    name={selectIcon} 
+                {checkable &&
+                <Icon
+                    onPress={disabled ? () => {
+                    } : this.onSelect.bind(this, node)}
+                    style={[styles.icon, {color: selectColor}]}
+                    size={iconSize}
+                    name={selectIcon}
                 />}
-                {icon && 
-                <Icon 
-                    style={styles.icon} 
-                    size={iconSize} 
-                    name={icon} 
+                {icon &&
+                <Icon
+                    style={styles.icon}
+                    size={iconSize}
+                    name={icon}
                 />}
                 <TouchableOpacity
                     onPress={this.onSelect.bind(this, node)}
@@ -371,7 +378,7 @@ class Tree extends React.Component {
      * 渲染树节点
      * 单个根节点使用此入口
      * 和renderTree递归
-     * @param {TreeNode} node 
+     * @param {TreeNode} node
      * @param {TreeNode} parentNode 父节点
      */
     renderNode(node, parentNode) {
@@ -385,9 +392,9 @@ class Tree extends React.Component {
         }
         node.parentNode = parentNode;
         return (
-            <View key={node.key} style={styles.node} >
+            <View key={node.key} style={styles.node}>
                 {this.renderItem(node)}
-                {hasChildren && 
+                {hasChildren &&
                 <View style={childrenStyle}>
                     {expanded[node.key] && this.renderTree(node.children, node)}
                 </View>
@@ -400,7 +407,7 @@ class Tree extends React.Component {
      * 渲染树节点
      * 多个根节点使用此入口
      * 和renderNode递归
-     * @param {Array<TreeNode>} data 
+     * @param {Array<TreeNode>} data
      * @param {TreeNode} parentNode 父节点
      */
     renderTree(data, parentNode) {
@@ -418,6 +425,7 @@ class Tree extends React.Component {
         </ScrollView>
     }
 }
+
 const iconWidth = 20;
 const lineMarginLeft = 4;
 const defaultStyles = {
@@ -447,6 +455,6 @@ const defaultStyles = {
     }
 }
 Tree.propTypes = {
-	// treeData: PropTypes.array.isRequired,
+    // treeData: PropTypes.array.isRequired,
 };
 export default Tree

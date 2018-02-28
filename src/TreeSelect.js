@@ -67,7 +67,7 @@ export default class TreeSelect extends Component {
         let valueStyle = styles.value;
         let valueWapperStyle = styles.valueWapper;
         let iconStyle = styles.icon;
-        const {checkable, checkStrictly, multiple, treeStyle, treeStyles, nodeStyle, showLine, iconSize, expandIconSize} = this.props;
+        const {checkable, checkStrictly, multiple, treeStyle, treeStyles, nodeStyle, showLine, iconSize, expandIconSize,justLeafSelect} = this.props;
         return (
             <View style={containerStyle}>
                 <View style={valueWapperStyle}>
@@ -114,6 +114,7 @@ export default class TreeSelect extends Component {
                         </TouchableHighlight>
                     </View>
                     <Tree
+                        justLeafSelect={justLeafSelect}
                         treeData={this.props.treeData}
                         checkable={checkable}
                         checkStrictly={checkStrictly}
