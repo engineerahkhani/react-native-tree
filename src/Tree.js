@@ -355,7 +355,7 @@ class Tree extends React.Component {
                 <Icon
                     onPress={disabled ? () => {
                     } : this.onSelect.bind(this, node)}
-                    style={[styles.icon, {color: selectColor}]}
+                    style={[styles.icon, {color: selectColor,color:'#000',paddingLeft:5}]}
                     size={iconSize}
                     name={selectIcon}
                 />}
@@ -431,13 +431,14 @@ const lineMarginLeft = 4;
 const defaultStyles = {
     tree: {
         padding: 10,
+        paddingRight:30,
         height: ScreenHeight - 90,
     },
     node: {
         paddingTop: 10
     },
     item: {
-        flexDirection: 'row',
+        flexDirection: 'row-reverse',
     },
     children: {
         paddingLeft: iconWidth,
@@ -447,10 +448,10 @@ const defaultStyles = {
         alignSelf: 'center'
     },
     leftLine: {
-        marginLeft: lineMarginLeft,
-        paddingLeft: iconWidth - lineMarginLeft - 1,
-        borderLeftWidth: 1,
-        borderLeftColor: '#d9d9d9',
+        marginRight: lineMarginLeft,
+        paddingRight: iconWidth - lineMarginLeft - 1,
+        borderRightWidth: 1,
+        borderRightColor: '#d9d9d9',
         borderStyle: 'solid',
     }
 }
