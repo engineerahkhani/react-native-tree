@@ -324,7 +324,9 @@ class Tree extends React.Component {
             }
         }
         let selectColor = '#108EE9';
-        let textStyle = {};
+        let textStyle = {
+            fontSize:20
+        };
         if (disabled) {
             selectColor = '#D0D0D0';
             textStyle.color = '#D0D0D0';
@@ -332,7 +334,7 @@ class Tree extends React.Component {
 
         textStyle.marginLeft = 2;
         if (selected[key]) {
-            textStyle.backgroundColor = '#D2EAFB'
+            textStyle.fontWeight='700'
         }
 
         let textNode;
@@ -344,13 +346,13 @@ class Tree extends React.Component {
         let styles = this.props.styles || defaultStyles;
         return (
             <View style={styles.item}>
-                {hasChildren &&
+                {/*{hasChildren &&
                 <Icon
                     onPress={this.onExpand.bind(this, node)}
                     style={[styles.icon, {color: expandIconColor}]}
                     size={expandIconSize}
                     name={expandIcon}
-                />}
+                />}*/}
                 {checkable &&
                 <Icon
                     onPress={disabled ? () => {
@@ -366,7 +368,7 @@ class Tree extends React.Component {
                     name={icon}
                 />}
                 <TouchableOpacity
-                    onPress={this.onSelect.bind(this, node)}
+                    onPress={hasChildren && this.onExpand.bind(this, node)}
                 >
                     {textNode}
                 </TouchableOpacity>
@@ -451,7 +453,7 @@ const defaultStyles = {
         marginRight: lineMarginLeft,
         paddingRight: iconWidth - lineMarginLeft - 1,
         borderRightWidth: 1,
-        borderRightColor: '#d9d9d9',
+        borderRightColor: 'transparent',
         borderStyle: 'solid',
     }
 }
